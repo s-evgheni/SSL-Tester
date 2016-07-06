@@ -173,27 +173,27 @@ public class RunApp {
         }
     }
 
-    private static void printIntitParams(){
-        System.err.println("***********************************");
-        System.err.println("Completed params initialization as:");
-        System.err.println("***********************************");
-        System.err.println("sslKeysLocation: "+sslKeysLocation);
-        System.err.println("keyStoreName: "+keyStoreName);
-        System.err.println("keyStorePassword: "+keyStorePassword);
-        System.err.println("trustStoreName: "+trustStoreName);
-        System.err.println("trustStorePassword: "+trustStorePassword);
-        System.err.println("integrationUserName: "+ integrationUserName);
-        System.err.println("integrationUserPassword: "+ integrationUserPassword);
-        System.err.println("ignoreSSLErrors: "+ignoreSSLErrors);
-        System.err.println("socketProtocol: "+socketProtocol);
-        System.err.println("serverName: "+serverName);
-        System.err.println("portNumber: "+ portNumber);
-        System.err.println("applicationPath: "+applicationPath);
-        System.err.println("***********************************");
-        System.err.println("System params set to:");
-        System.err.println("***********************************");
-        System.err.println("-Djavax.net.debug :"+System.getProperty("javax.net.debug"));
-        System.err.println("***********************************");
+    private static void printIntitParams() {
+        System.out.println("***********************************");
+        System.out.println("Completed params initialization as:");
+        System.out.println("***********************************");
+        System.out.println("sslKeysLocation: "+sslKeysLocation);
+        System.out.println("keyStoreName: "+keyStoreName);
+        System.out.println("keyStorePassword: "+keyStorePassword);
+        System.out.println("trustStoreName: "+trustStoreName);
+        System.out.println("trustStorePassword: "+trustStorePassword);
+        System.out.println("integrationUserName: "+ integrationUserName);
+        System.out.println("integrationUserPassword: "+ integrationUserPassword);
+        System.out.println("ignoreSSLErrors: "+ignoreSSLErrors);
+        System.out.println("socketProtocol: "+socketProtocol);
+        System.out.println("serverName: "+serverName);
+        System.out.println("portNumber: "+ portNumber);
+        System.out.println("applicationPath: "+applicationPath);
+        System.out.println("***********************************");
+        System.out.println("System params set to:");
+        System.out.println("***********************************");
+        System.out.println("-Djavax.net.debug :"+System.getProperty("javax.net.debug"));
+        System.out.println("***********************************");
     }
 
     public static void main(String[] args) {
