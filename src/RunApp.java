@@ -18,8 +18,16 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.SingleClientConnManager;
 import org.apache.http.util.EntityUtils;
 
-import java.io.*;
-import java.security.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Properties;
@@ -32,7 +40,7 @@ import java.util.Properties;
 /*TO RUN JAR file:
     1. Open command line and cd to the artifact location
     2. To run against local environment type:
-            java -Djavax.net.debug="ssl:handshake" -jar SecureSocketLayerTester.jar /Users/evgheni/SSLKeys/ keyStore.jks P@ssw0rd trustStore.jks P@ssw0rd test_user@myserver.com P@ssw0rd false https localhost 8443 /MyApp/api/connect/endpoint
+            java -Djavax.net.debug="ssl:handshake" -jar SecureSocketLayerTester.jar /Users/evgheni/SSLKeys/ keyStore.jks P@ssw0rd trustStore.jks P@ssw0rd test_user@myserver.com P@ssw0rd false https localhost 8443 /MyApp/api/connect/endpoint false
 
    3. To run against specific environment with predefined properties file type:
             java -Djavax.net.debug="ssl:handshake" -jar SecureSocketLayerTester.jar
@@ -62,6 +70,8 @@ public class RunApp {
     private static int portNumber; //                               Can be provided via:  args[10]. Default value: '443'
     private static String applicationPath;//                        Can be provided via:  args[11]. Default value: '/MyApp/api/connect/endpoint'
 
+    private static boolean enableClientAuth;//                      Can be provided via:  args[12]. Default value: false
+
 
     private static void initEnvironment(String[] args){
 
@@ -83,6 +93,7 @@ public class RunApp {
             serverName = args[9].length()>0 ? args[9] : "localhost";
             portNumber = args[10].length()>0 ? Integer.parseInt(args[10]) : 443;
             applicationPath=args[11].length()>0 ? args[11] : "/MyApp/api/connect/endpoint";
+            enableClientAuth = args[12].length() > 0 && Boolean.parseBoolean(args[12]);
         }
         //load data from properties file:
         else {
@@ -117,6 +128,7 @@ public class RunApp {
             serverName = properties.getProperty("serverName");
             portNumber = Integer.parseInt(properties.getProperty("portNumber"));
             applicationPath=properties.getProperty("applicationPath");
+            enableClientAuth = Boolean.parseBoolean(properties.getProperty("enableClientAuth"));
         }
 
 
@@ -346,9 +358,14 @@ public class RunApp {
                 };
                 socketFactory = new SSLSocketFactory(trustAllStrategy, new AllowAllHostnameVerifier());
             }
+            else if(enableClientAuth) {
+                System.err.println("Requested SSL Socket connection with ENABLED client authentication");
+                //HERE:           SSLSocketFactory(KeyStore keystore, String keystorePassword, KeyStore truststore)
+                socketFactory = new SSLSocketFactory(keyStore, new String(keyStorePassword), trustStore);
+            }
             else {
-                System.err.println("Requested SSL Socket connection with disabled client authentication");
-                //HERE:           (String algorithm, KeyStore keystore, String keyPassword, KeyStore truststore, SecureRandom random, TrustStrategy trustStrategy, X509HostnameVerifier hostnameVerifier)
+                System.err.println("Requested SSL Socket connection with DISABLED client authentication");
+                //HERE:           SSLSocketFactory(KeyStore truststore)
                 socketFactory = new SSLSocketFactory(trustStore);
             }
 
