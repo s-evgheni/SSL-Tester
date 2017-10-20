@@ -148,27 +148,13 @@ public class RunApp {
             throw new RuntimeException(e);
         }
 
-        //Try to load data from registered private key store into memory which can be used by our client to authenticate itself against server
-        File keyStoreLocation = new File(sslKeysLocation+keyStoreName);
-        try{
-            keyStore.load(new FileInputStream(keyStoreLocation), keyStorePassword);
-        } catch (CertificateException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
 
-        //Try to load data from registered trust store into memory which will be used by our client to authenticate server
+        File keyStoreLocation = new File(sslKeysLocation+keyStoreName);
         File trustStoreLocation = new File(sslKeysLocation+trustStoreName);
-        try{
+        try {
+            //Try to load data from registered private key store into memory which can be used by our client to authenticate itself against server
+            keyStore.load(new FileInputStream(keyStoreLocation), keyStorePassword);
+            //Try to load data from registered trust store into memory which will be used by our client to authenticate server
             trustStore.load(new FileInputStream(trustStoreLocation), trustStorePassword);
         } catch (CertificateException e) {
             e.printStackTrace();
