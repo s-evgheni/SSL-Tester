@@ -20,7 +20,6 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyManagementException;
@@ -32,7 +31,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Properties;
 
-
+//REQUIRES: JRE7+ to run
 //USEAGE:
 //TO BUILD JAR file:
 // 1. In IntelliJ Select Build -> Build Artifacts
@@ -75,8 +74,7 @@ public class RunApp {
 
     private static void initEnvironment(String[] args){
 
-
-        if(args.length==11){
+        if(args.length == 11){
             System.err.println("Loading data from supplied parameters");
             //location of the stores:
             sslKeysLocation = args[0].length()>0?args[0]:"/Users/evgheni/SSLKeys/";
@@ -100,18 +98,11 @@ public class RunApp {
             System.err.println("Loading data from properties file ...");
 
             Properties properties = new Properties();
-            InputStream inputStream=null;
 
-            try {
-                inputStream = RunApp.class.getClassLoader().getResourceAsStream("testerConfig.properties");
+            try (InputStream inputStream = RunApp.class.getClassLoader().getResourceAsStream("testerConfig.properties")) {
                 properties.load(inputStream);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
-            } catch (Exception e) {
+            }
+            catch (IOException e) {
                 e.printStackTrace();
                 throw new RuntimeException(e);
             }
@@ -131,23 +122,14 @@ public class RunApp {
             enableClientAuth = Boolean.parseBoolean(properties.getProperty("enableClientAuth"));
         }
 
-
-        try{
+        try {
             keyStore = KeyStore.getInstance("JKS");
-        }
-        catch (KeyStoreException e){
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
-
-        try{
             trustStore = KeyStore.getInstance("JKS");
         }
         catch (KeyStoreException e){
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-
 
         File keyStoreLocation = new File(sslKeysLocation+keyStoreName);
         File trustStoreLocation = new File(sslKeysLocation+trustStoreName);
@@ -156,22 +138,14 @@ public class RunApp {
             keyStore.load(new FileInputStream(keyStoreLocation), keyStorePassword);
             //Try to load data from registered trust store into memory which will be used by our client to authenticate server
             trustStore.load(new FileInputStream(trustStoreLocation), trustStorePassword);
-        } catch (CertificateException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        }
+        catch (CertificateException | NoSuchAlgorithmException | IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
 
-    private static void printIntitParams() {
+    private static void printInitParams() {
         System.out.println("***********************************");
         System.out.println("Completed params initialization as:");
         System.out.println("***********************************");
@@ -196,14 +170,14 @@ public class RunApp {
 
     public static void main(String[] args) {
         initEnvironment(args);
-        printIntitParams();
+        printInitParams();
 
         HttpHost target;
         HttpGet  httpGet;
         HttpResponse response;
         HttpEntity entity;
 
-        try{
+        try {
 
             //Init new http client
             DefaultHttpClient httpClient = newClient();
@@ -357,13 +331,8 @@ public class RunApp {
 
             return socketFactory;
 
-        }catch (UnrecoverableKeyException e) {
-            throw new RuntimeException(e);
-        } catch (KeyStoreException e) {
-            throw new RuntimeException(e);
-        } catch (KeyManagementException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchAlgorithmException e) {
+        }
+        catch (UnrecoverableKeyException | KeyStoreException | KeyManagementException | NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
     }
